@@ -179,8 +179,8 @@ export default function App() {
     return days;
   };
 
-  const PrevMonth = () => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
-  const NextMonth = () => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
+  const PrevMonth = () => setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+  const NextMonth = () => setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
 
   // Filtering
   const filteredSchedules = useMemo(() => {
@@ -226,9 +226,9 @@ export default function App() {
           {/* Calendar Section */}
           <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
             <div className="flex justify-between items-center mb-4">
-              <button onClick={PrevMonth} className="p-2 hover:bg-gray-100 rounded-full transition-colors"><ChevronLeft className="w-5 h-5" /></button>
+              <button type="button" onClick={PrevMonth} className="p-2 hover:bg-gray-100 rounded-full transition-colors"><ChevronLeft className="w-5 h-5" /></button>
               <h2 className="text-lg font-semibold">{currentMonth.getFullYear()}년 {currentMonth.getMonth() + 1}월</h2>
-              <button onClick={NextMonth} className="p-2 hover:bg-gray-100 rounded-full transition-colors"><ChevronRight className="w-5 h-5" /></button>
+              <button type="button" onClick={NextMonth} className="p-2 hover:bg-gray-100 rounded-full transition-colors"><ChevronRight className="w-5 h-5" /></button>
             </div>
             
             <div className="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-gray-500 mb-2">
@@ -394,7 +394,7 @@ export default function App() {
               <div className="mt-4 space-y-2 max-h-40 overflow-y-auto custom-scrollbar">
                 {anniversaries.sort((a,b)=> a.date.localeCompare(b.date)).map(a => (
                   <div key={a.id} className="flex justify-between items-center text-sm bg-white p-2 border rounded-lg">
-                    <span className="font-medium text-purple-800 w-12">{a.date}</span>
+                    <span className="font-medium text-purple-800 whitespace-nowrap shrink-0 min-w-fit mr-2">{a.date.includes('-') ? `${parseInt(a.date.split('-')[0], 10)}월 ${parseInt(a.date.split('-')[1], 10)}일` : a.date}</span>
                     <span className="flex-1 px-2 text-gray-700 truncate">{a.title}</span>
                     <button onClick={() => handleAnniDelete(a.id)} className="text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4"/></button>
                   </div>
@@ -409,29 +409,31 @@ export default function App() {
           <section className="pb-6">
             <h3 className="text-lg font-semibold mb-4 text-gray-800 flex items-center"><Search className="w-5 h-5 mr-2" /> 전체 일정 검색</h3>
             
-            <div className="flex space-x-2 mb-4">
-              <input
-                type="date"
-                value={searchStartDate}
-                onChange={(e) => { setSearchStartDate(e.target.value); setCurrentPage(1); }}
-                className="w-[32%] px-2 py-2 rounded-lg border text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-              <span className="flex items-center text-gray-500 font-medium">~</span>
-              <input
-                type="date"
-                value={searchEndDate}
-                onChange={(e) => { setSearchEndDate(e.target.value); setCurrentPage(1); }}
-                className="w-[32%] px-2 py-2 rounded-lg border text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-              <div className="relative flex-1">
+            <div className="flex flex-col space-y-3 mb-4">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="date"
+                  value={searchStartDate}
+                  onChange={(e) => { setSearchStartDate(e.target.value); setCurrentPage(1); }}
+                  className="flex-1 px-3 py-2 rounded-lg border text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+                <span className="text-gray-500 font-medium">~</span>
+                <input
+                  type="date"
+                  value={searchEndDate}
+                  onChange={(e) => { setSearchEndDate(e.target.value); setCurrentPage(1); }}
+                  className="flex-1 px-3 py-2 rounded-lg border text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
+              <div className="relative w-full">
                 <input
                   type="text"
-                  placeholder="키워드"
+                  placeholder="키워드 입력"
                   value={searchKeyword}
                   onChange={(e) => { setSearchKeyword(e.target.value); setCurrentPage(1); }}
-                  className="w-full pl-7 pr-2 py-2 rounded-lg border text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full pl-9 pr-3 py-2.5 rounded-lg border text-sm focus:ring-2 focus:ring-blue-500 outline-none shadow-sm"
                 />
-                <Search className="w-3.5 h-3.5 absolute left-2.5 top-3 text-gray-400" />
+                <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
               </div>
             </div>
 
