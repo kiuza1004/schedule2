@@ -8,7 +8,8 @@ export default function App() {
   const [schedules, setSchedules] = useState([]);
   const [anniversaries, setAnniversaries] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [calYear, setCalYear] = useState(() => new Date().getFullYear());
+  const [calMonth, setCalMonth] = useState(() => new Date().getMonth());
 
   // Form State
   const [title, setTitle] = useState('');
@@ -164,23 +165,38 @@ export default function App() {
   const firstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
 
   const getCalendarDays = () => {
-    const year = currentMonth.getFullYear();
-    const month = currentMonth.getMonth();
-    const daysCount = daysInMonth(year, month);
-    const startDay = firstDayOfMonth(year, month);
+    const daysCount = daysInMonth(calYear, calMonth);
+    const startDay = firstDayOfMonth(calYear, calMonth);
 
     const days = [];
     for (let i = 0; i < startDay; i++) days.push(null);
     for (let i = 1; i <= daysCount; i++) {
         const d = String(i).padStart(2, '0');
-        const m = String(month + 1).padStart(2, '0');
-        days.push(`${year}-${m}-${d}`);
+        const m = String(calMonth + 1).padStart(2, '0');
+        days.push(`${calYear}-${m}-${d}`);
     }
     return days;
   };
 
-  const PrevMonth = () => setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
-  const NextMonth = () => setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+  const PrevMonth = () => {
+    setCalMonth(prev => {
+      if (prev === 0) {
+        setCalYear(y => y - 1);
+        return 11;
+      }
+      return prev - 1;
+    });
+  };
+
+  const NextMonth = () => {
+    setCalMonth(prev => {
+      if (prev === 11) {
+        setCalYear(y => y + 1);
+        return 0;
+      }
+      return prev + 1;
+    });
+  };
 
   // Filtering
   const filteredSchedules = useMemo(() => {
@@ -227,7 +243,7 @@ export default function App() {
           <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
             <div className="flex justify-between items-center mb-4">
               <button type="button" onClick={PrevMonth} className="p-2 hover:bg-gray-100 rounded-full transition-colors"><ChevronLeft className="w-5 h-5" /></button>
-              <h2 className="text-lg font-semibold">{currentMonth.getFullYear()}년 {currentMonth.getMonth() + 1}월</h2>
+              <h2 className="text-lg font-semibold">{calYear}년 {calMonth + 1}월</h2>
               <button type="button" onClick={NextMonth} className="p-2 hover:bg-gray-100 rounded-full transition-colors"><ChevronRight className="w-5 h-5" /></button>
             </div>
             
