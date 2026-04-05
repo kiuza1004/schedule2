@@ -179,23 +179,21 @@ export default function App() {
   };
 
   const PrevMonth = () => {
-    setCalMonth(prev => {
-      if (prev === 0) {
-        setCalYear(y => y - 1);
-        return 11;
-      }
-      return prev - 1;
-    });
+    if (calMonth === 0) {
+      setCalYear(prev => prev - 1);
+      setCalMonth(11);
+    } else {
+      setCalMonth(prev => prev - 1);
+    }
   };
 
   const NextMonth = () => {
-    setCalMonth(prev => {
-      if (prev === 11) {
-        setCalYear(y => y + 1);
-        return 0;
-      }
-      return prev + 1;
-    });
+    if (calMonth === 11) {
+      setCalYear(prev => prev + 1);
+      setCalMonth(0);
+    } else {
+      setCalMonth(prev => prev + 1);
+    }
   };
 
   // Filtering
@@ -256,7 +254,8 @@ export default function App() {
                 <div key={i} className="aspect-square flex items-center justify-center">
                   {dateStr ? (
                     <button
-                      onClick={() => handleDateClick(dateStr)}
+                      type="button"
+                      onClick={(e) => { e.preventDefault(); handleDateClick(dateStr); }}
                       className={`relative w-full h-full flex flex-col items-center justify-center rounded-lg transition-all ${
                         selectedDate === dateStr 
                           ? 'bg-blue-600 text-white shadow-md' 
